@@ -1,4 +1,5 @@
 import os
+import shutil
 
 
 class Html:
@@ -6,15 +7,15 @@ class Html:
         self.doc = ""
         self.path = "./report"
 
-    def add_paragraph(text: str):
+    def add_paragraph(self, text: str):
         self.doc += f"<p>{text}</p>\n"
 
-    def persist():
+    def persist(self):
         # Arranges the repository
         if not os.path.exists(self.path):
             os.makedirs(self.path)
         else:
-            os.rmdir(self.path)
+            shutil.rmtree(self.path)
             os.makedirs(self.path)
 
         # Writes the html file
