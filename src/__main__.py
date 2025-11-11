@@ -6,5 +6,7 @@ args = ArgParse()
 gitruck = Gitruck(args.get_url())
 html = Html()
 
-html.add_paragraph(args.get_url())
+html.add_paragraph("Commit distribution")
+commit_dist = gitruck.commit_dist()
+html.add_image(commit_dist)
 html.persist()

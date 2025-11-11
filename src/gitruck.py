@@ -7,7 +7,7 @@ class Gitruck:
     def __init__(self, repo: str):
         self.repo = repo
 
-    def calculate_commit_dist():
+    def commit_dist(self):
         # Retrieves information from github api
         response = requests.get(
             "https://api.github.com/repos/GloriousEggroll/proton-ge-custom/commits"
@@ -27,7 +27,10 @@ class Gitruck:
 
         # Generates the visualization
         img = BytesIO()
-        plt.hist(commit_authors)
-        plt.savefig(img, format="png", dpi=300)
+        fig, ax = plt.subplots()
+        fig.set_size_inches(8, 6)
+        ax.hist(commit_authors)
+        fig.savefig(img, format="png", dpi=300)
+        plt.close()
 
         return img
