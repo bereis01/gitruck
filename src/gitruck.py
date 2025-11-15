@@ -10,13 +10,10 @@ from matplotlib import pyplot as plt
 
 
 class Gitruck:
-    def __init__(self, owner: str, repo: str):
-        self.owner = owner
-        self.repo = repo
+    def __init__(self, github_url: str):
+        self._github_repository_url = github_url
 
-        self._github_repository_url = f"https://github.com/{owner}/{repo}.git"
         self._local_repository_path = "./tmp"
-
         self._load_repository_locally()
 
     def _load_repository_locally(self):
@@ -239,8 +236,11 @@ class Gitruck:
 
             # Normalizes each value
             for contributor in contributors:
-                normalized_DOA[contributor][file] = (
-                    DOA[contributor][file] - min_val
-                ) / (max_val - min_val)
+                if (max_val - min_val) != 0:
+                    normalized_DOA[contributor][file] = (
+                        DOA[contributor][file] - min_val
+                    ) / (max_val - min_val)
+                else:
+                    normalized_DOA[contributor][file] = DOA[contributor][file]
 
         return normalized_DOA

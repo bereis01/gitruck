@@ -5,6 +5,11 @@ from io import BytesIO
 
 class Html:
     def __init__(self):
+        self.logo = (
+            '<p align="center">\n'
+            '<img src="../assets/gitruck_logo.png" width="250" height="250">\n'
+            "</p>"
+        )
         self.style = (
             ".center {\n"
             "display: block;\n"
@@ -35,6 +40,26 @@ class Html:
             ">\n"
         )
 
+    def add_truck_factor(self, truck_factor: int):
+        self.body += (
+            '<p align="center">'
+            '<a style="font-size:40px">Your truck factor is...</a>'
+            '<a style="font-size:50px;color:yellow;text-shadow:2px 0 #000, -2px 0 #000, 0 2px #000, 0 -2px #000,'
+            f'1px 1px #000, -1px -1px #000, 1px -1px #000, -1px 1px #000;">{truck_factor}</a>'
+            "</p>"
+        )
+
+    def add_most_important_devs(self, image: BytesIO):
+        image_ID = len(self.images)
+        self.images.append(image)
+
+        self.body += (
+            '<p align="center">'
+            '<a style="font-size:25px">These are the most important devs:</a></br>'
+            f'<img src=".{self.images_path}/{image_ID}.png" width="400" height="400">'
+            "</p>"
+        )
+
     def persist(self):
         # Arranges the repository
         if not os.path.exists(self.path):
@@ -56,6 +81,7 @@ class Html:
         doc_str = "<!DOCTYPE html>\n<html>\n<head>\n<style>"
         doc_str += self.style
         doc_str += "</style>\n</head>\n<body>"
+        doc_str += self.logo
         doc_str += self.body
         doc_str += "</body>\n</html>"
 
