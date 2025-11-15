@@ -32,10 +32,10 @@ class Gitruck:
 
         return files
 
-    def _recursively_get_file_objects(root, files, level=0):
+    def _recursively_get_file_objects(self, root, files, level=0):
         for entry in root:
             if entry.type == "tree":
-                print_files_from_git(entry, files, level + 1)
+                self._recursively_get_file_objects(entry, files, level + 1)
             else:
                 files.append(entry)
 
