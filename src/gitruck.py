@@ -6,7 +6,6 @@ import requests
 import Levenshtein
 from git import Repo
 from io import BytesIO
-from matplotlib import pyplot as plt
 
 
 class Gitruck:
@@ -15,6 +14,7 @@ class Gitruck:
 
         self._local_repository_path = "./tmp"
         self._load_repository_locally()
+        #self.conn = Repo(self._local_repository_path)
 
     def _load_repository_locally(self):
         if os.path.exists(self._local_repository_path):
@@ -66,6 +66,7 @@ class Gitruck:
                 authored_files.items(), key=lambda pair: len(pair[1]), reverse=True
             )
         }
+        top_contributors = {k: len(v) for k, v in authored_files.items()}
 
         # Calculates the superset of files
         _files = []
@@ -90,7 +91,7 @@ class Gitruck:
                 _files += authored_files[contributor]
             _files = list(set(_files))
 
-        return truck_factor
+        return truck_factor, top_contributors
 
     def _get_code_file_paths(self):
         # Uses linguist to get the files
