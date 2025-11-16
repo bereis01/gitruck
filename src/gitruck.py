@@ -11,10 +11,8 @@ from io import BytesIO
 class Gitruck:
     def __init__(self, github_url: str):
         self._github_repository_url = github_url
-
         self._local_repository_path = "./tmp"
         self._load_repository_locally()
-        #self.conn = Repo(self._local_repository_path)
 
     def _load_repository_locally(self):
         if os.path.exists(self._local_repository_path):
@@ -22,19 +20,6 @@ class Gitruck:
         self.conn = Repo.clone_from(
             self._github_repository_url, self._local_repository_path
         )
-
-    def _get_all_file_objects(self):
-        files = []
-        self._recursively_get_file_objects(self.conn.head.commit.tree, files)
-
-        return files
-
-    def _recursively_get_file_objects(self, root, files, level=0):
-        for entry in root:
-            if entry.type == "tree":
-                self._recursively_get_file_objects(entry, files, level + 1)
-            else:
-                files.append(entry)
 
     def calculate_truck_factor(self):
         files = self._get_code_file_paths()
