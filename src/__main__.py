@@ -5,7 +5,8 @@ from .gitruck import Gitruck
 args = ArgParse()
 git_url = args.get_url()
 
-gitruck = Gitruck(args.get_url())
+gitruck = Gitruck()
+gitruck.load_repository_locally(args.get_url())
 truck_factor, top_contributors = gitruck.calculate_truck_factor()
 
 html = Html()

@@ -9,21 +9,17 @@ from io import BytesIO
 
 
 class Gitruck:
-    def __init__(self, github_url: str):
-        self._github_repository_url = github_url
+    def __init__(self):
         self._local_repository_path = "./tmp"
-        self._load_repository_locally()
 
-    def _load_repository_locally(self):
+    def load_repository_locally(self, github_url: str):
         if os.path.exists(self._local_repository_path):
             shutil.rmtree(self._local_repository_path)
-        self.conn = Repo.clone_from(
-            self._github_repository_url, self._local_repository_path
-        )
+        self.conn = Repo.clone_from(self.github_url, self._local_repository_path)
 
     def calculate_truck_factor(self):
         files = self._get_code_file_paths()
-        dev_name = self._generate_dev_names(self._get_contributors())
+        dev_name = self._generate_dev_names(self._get_git_contributors())
         contributors = list(set(dev_name.values()))
         commits_per_file = self._get_commits_per_file(files)
 
@@ -81,10 +77,13 @@ class Gitruck:
     def _get_code_file_paths(self):
         # Uses linguist to get the files
         git_cmd = self.conn.git
-        raw_files = git_cmd.execute(["github-linguist", "-b"])
+        linguist_output = git_cmd.execute(["github-linguist", "-b"])
 
+        return self._parse_linguist_output(linguist_output)
+
+    def _parse_linguist_output(self, linguist_output: str):
         # Removes the top analysis
-        raw_files = raw_files.split("\n")
+        raw_files = linguist_output.split("\n")
         for i in range(len(raw_files)):
             if raw_files[i] == "":
                 raw_files = raw_files[i + 1 :]
@@ -98,12 +97,14 @@ class Gitruck:
 
         return files
 
-    def _get_contributors(self):
+    def _get_git_contributors(self):
         # Uses the git interface to get this
         git_cmd = self.conn.git
         contributors = git_cmd.execute(["git", "shortlog", "-sne", "--all"])
 
-        # Parses the result
+        return self._parse_git_contributors_output(contributors)
+
+    def _parse_git_contributors_output(self, contributors: str):
         contributors = contributors.split("\n")
         for i in range(len(contributors)):
             contributor = contributors[i]
@@ -115,7 +116,6 @@ class Gitruck:
             name = name.strip()
             email = email[:-1].strip()
             contributors[i] = tuple([count, name, email])
-
         return contributors
 
     def _generate_dev_names(self, contributors: list):
