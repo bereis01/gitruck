@@ -8,8 +8,8 @@ from matplotlib import pyplot as plt
 
 class Html:
     def __init__(self):
-        self.persist_path = "./report/"
-        self.images_path = "assets/"
+        self._persist_path = "./report/"
+        self._images_path = "assets/"
 
         self.style = (
             ".center {\n"
@@ -19,14 +19,16 @@ class Html:
             "width: 50%;\n"
             "}\n"
         )
-        self.logo = (
+        self.body = ""
+
+        self.images = []
+
+    def add_logo(self):
+        self.body += (
             '<p style="margin-bottom:0px;" align="center">\n'
             '<img src="../assets/gitruck_logo.png" width="250" height="250">\n'
             "</p>"
         )
-        self.body = ""
-
-        self.images = []
 
     def add_truck_factor(self, truck_factor: int):
         self.body += (
@@ -66,23 +68,23 @@ class Html:
         self.body += (
             '<p align="center">'
             '<a style="font-size:25px">These are the most important devs:</a></br>'
-            f'<img src="./{self.images_path}{image_ID}.png" width="{width}" height="{height}">'
+            f'<img src="./{self._images_path}{image_ID}.png" width="{width}" height="{height}">'
             "</p>"
         )
 
     def persist(self):
         # Arranges the repository
-        if not os.path.exists(self.persist_path):
-            os.makedirs(self.persist_path)
+        if not os.path.exists(self._persist_path):
+            os.makedirs(self._persist_path)
         else:
-            shutil.rmtree(self.persist_path)
-            os.makedirs(self.persist_path)
-        os.makedirs(self.persist_path + self.images_path)
+            shutil.rmtree(self._persist_path)
+            os.makedirs(self._persist_path)
+        os.makedirs(self._persist_path + self._images_path)
 
         # Writes buffered images
         for image_ID in range(len(self.images)):
             image = self.images[image_ID]
-            out = open(f"{self.persist_path}{self.images_path}{image_ID}.png", "wb")
+            out = open(f"{self._persist_path}{self._images_path}{image_ID}.png", "wb")
             out.write(image.getbuffer())
             out.close()
 
@@ -90,11 +92,10 @@ class Html:
         doc_str = "<!DOCTYPE html>\n<html>\n<head>\n<style>"
         doc_str += self.style
         doc_str += "</style>\n</head>\n<body>"
-        doc_str += self.logo
         doc_str += self.body
         doc_str += "</body>\n</html>"
 
         # Writes the html file
-        doc_file = open(f"{self.persist_path}/index.html", "w")
+        doc_file = open(f"{self._persist_path}/index.html", "w")
         doc_file.write(doc_str)
         doc_file.close()
