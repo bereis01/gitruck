@@ -15,7 +15,7 @@ class Gitruck:
     def load_repository_locally(self, github_url: str):
         if os.path.exists(self._local_repository_path):
             shutil.rmtree(self._local_repository_path)
-        self.conn = Repo.clone_from(self.github_url, self._local_repository_path)
+        self.conn = Repo.clone_from(github_url, self._local_repository_path)
 
     def calculate_truck_factor(self):
         files = self._get_code_file_paths()
@@ -161,7 +161,7 @@ class Gitruck:
     def _get_commits_per_file(self, files: list):
         commits_per_file = {}
         for file in files:
-            commits_for_file_generator = self.conn.iter_commits(all=True, paths=file)
+            commits_for_file_generator = self.conn.iter_commits(paths=file)
             commits_per_file[file] = list(commits_for_file_generator)
 
         return commits_per_file
@@ -183,7 +183,7 @@ class Gitruck:
                 authorship = 0
                 first_author = commits_per_file[file][-1].author.name
                 if (first_author in dev_name.keys()) and (
-                    dev_name[commits_per_file[file][-1].author.name] == contributor
+                    dev_name[first_author] == contributor
                 ):
                     authorship = 1
 
