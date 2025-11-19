@@ -27,7 +27,7 @@
 <!-- TECHNOLOGIES -->
 # 📟 Tecnologias
 
-
+A ferramenta foi inteiramente implementada na linguagem de programação Python, em sua versão 3.12.3. Ela é composta de três principais módulos. O primeiro deles é responsável pela interface via linha de comando e, essencialmente, recebe, realiza o *parsing* e retorna internamente à aplicação os parâmetros fornecidos pelo usuário. Sua implementação foi baseada na biblioteca *argparse*, a qual faz parte da biblioteca padrão do Python. O segundo módulo é responsável pelo cálculo das diversas métricas apresentadas, sendo a principal delas o ***truck factor***. Nele, a biblioteca *GitPython* é utilizada para a clonagem local do repositório e para a extração das informações dele, como *commits* em um arquivo. Além disso, um programa, denominado *linguist*, é utilizado para a extração especificamente dos arquivos de código em um repositório, por ele fazer uma filtragem automática de arquivos terceiros ou automaticamente gerados. O módulo acessa esse programa por meio de uma interface da biblioteca *GitPython*, a qual permite a execução de comandos do terminal no contexto do repositório. Por fim, o último módulo é responsável pela geração da visualização dos resultados em formato *.html*. Este módulo não utiliza nenhuma biblioteca em especial. Os gráficos são gerados por meio da *Matplotlib*, enquanto o documento em si é montado manualmente.
 
 <!-- USAGE -->
 # ⚙️ Utilização
