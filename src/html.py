@@ -33,7 +33,7 @@ class Html:
     def add_truck_factor(self, truck_factor: int):
         self.body += (
             '<p style="margin-top:0px;" align="center">'
-            '<a style="font-size:40px">Your truck factor is...</a>'
+            '<a style="font-size:40px">Your truck factor is... </a>'
             '<a style="font-size:50px;color:#F4C524;text-shadow:2px 0 #000, -2px 0 #000, 0 2px #000, 0 -2px #000,'
             f'1px 1px #000, -1px -1px #000, 1px -1px #000, -1px 1px #000;">{truck_factor}</a>'
             "</p>"
@@ -79,22 +79,28 @@ class Html:
         fig.set_size_inches(12, 3.5)
 
         ax[0].plot(total.keys(), total.values(), color="#F4C524")
+        ax[0].scatter(total.keys(), total.values(), color="#F4C524")
         ax[0].set_ylim(0, max(total.values()))  # Normalizes scale according to total
         ax[0].set_title("Total Amount of Contributors")
         ax[0].set_xlabel("Year")
         ax[0].set_ylabel("N° of Contributors")
+        ax[0].grid(alpha=0.25)
 
         ax[1].plot(positive.keys(), positive.values(), color="#41E04E")
+        ax[1].scatter(positive.keys(), positive.values(), color="#41E04E")
         ax[1].set_ylim(0, max(total.values()))  # Normalizes scale according to total
         ax[1].set_title("Net Amount of New Contributors")
         ax[1].set_xlabel("Year")
         ax[1].set_ylabel("N° of Contributors")
+        ax[1].grid(alpha=0.25)
 
         ax[2].plot(negative.keys(), negative.values(), color="#E04141")
+        ax[2].scatter(negative.keys(), negative.values(), color="#E04141")
         ax[2].set_ylim(0, max(total.values()))  # Normalizes scale according to total
         ax[2].set_title("Net Amount of Lost Contributors")
         ax[2].set_xlabel("Year")
         ax[2].set_ylabel("N° of Contributors")
+        ax[2].grid(alpha=0.25)
 
         fig.tight_layout()  # Makes things less tight lol
         fig.savefig(img, format="png", dpi=300)
