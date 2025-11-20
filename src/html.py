@@ -72,6 +72,50 @@ class Html:
             "</p>"
         )
 
+    def add_contributor_statistics(self, total: dict, positive: dict, negative: dict):
+        # Generates the visualization
+        img = BytesIO()
+        fig, ax = plt.subplots(1, 3)
+        fig.set_size_inches(12, 3.5)
+
+        ax[0].plot(total.keys(), total.values(), color="#F4C524")
+        ax[0].set_ylim(0, max(total.values()))  # Normalizes scale according to total
+        ax[0].set_title("Total Amount of Contributors")
+        ax[0].set_xlabel("Year")
+        ax[0].set_ylabel("N° of Contributors")
+
+        ax[1].plot(positive.keys(), positive.values(), color="#41E04E")
+        ax[1].set_ylim(0, max(total.values()))  # Normalizes scale according to total
+        ax[1].set_title("Net Amount of New Contributors")
+        ax[1].set_xlabel("Year")
+        ax[1].set_ylabel("N° of Contributors")
+
+        ax[2].plot(negative.keys(), negative.values(), color="#E04141")
+        ax[2].set_ylim(0, max(total.values()))  # Normalizes scale according to total
+        ax[2].set_title("Net Amount of Lost Contributors")
+        ax[2].set_xlabel("Year")
+        ax[2].set_ylabel("N° of Contributors")
+
+        fig.tight_layout()  # Makes things less tight lol
+        fig.savefig(img, format="png", dpi=300)
+        plt.close()
+
+        # Appends it to the buffer
+        image_ID = len(self.images)
+        self.images.append(img)
+
+        # Includes it in the body of the doc
+        width, height = fig.get_size_inches() * fig.dpi
+        self.body += (
+            '<p style="margin-top:50px;" align="center">'
+            '<a style="font-size:25px;">Here are some statistics about the amount of contributors:</a></br>'
+            f'<img style="margin-top:20px;" src="./{self._images_path}{image_ID}.png" width="{width}" height="{height}">'
+            "</p>"
+        )
+
+    def add_contribution_statistics(self):
+        pass
+
     def persist(self):
         # Arranges the repository
         if not os.path.exists(self._persist_path):

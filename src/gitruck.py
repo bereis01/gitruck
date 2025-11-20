@@ -2,6 +2,7 @@ import os
 import copy
 import math
 import shutil
+import datetime
 import requests
 import Levenshtein
 from git import Repo
@@ -11,6 +12,9 @@ from io import BytesIO
 class Gitruck:
     def __init__(self):
         self._local_repository_path = "./tmp"
+
+    def _load_aux(self):
+        self.conn = Repo("./tmp")
 
     def load_repository_locally(self, github_url: str):
         if os.path.exists(self._local_repository_path):
@@ -230,3 +234,168 @@ class Gitruck:
                     normalized_DOA[contributor][file] = DOA[contributor][file]
 
         return normalized_DOA
+
+    def calculate_contributors_per_year(self):
+        year_begin = int(
+            self.conn.git.execute(
+                [
+                    "git",
+                    "log",
+                    "--reverse",
+                    "--pretty=format:%ad",
+                    "--date=format:%Y",
+                ]
+            ).split("\n")[0]
+        )
+        year_end = int(
+            self.conn.git.execute(
+                [
+                    "git",
+                    "log",
+                    "--pretty=format:%ad",
+                    "--date=format:%Y",
+                ]
+            ).split("\n")[0]
+        )
+
+        result_total = {}
+        result_positive = {}
+        result_negative = {}
+        for year in range(year_begin, year_end + 1):
+            # Gets the list of contributors this year
+            commit_list = list(
+                self.conn.iter_commits(since=str(year), until=str(year + 1))
+            )
+            contributors = []
+            for commit in commit_list:
+                contributors.append(commit.author.name)
+
+            # Gets the list of contributors last year
+            old_contributors = []
+            if year != year_begin:
+                commit_list = list(
+                    self.conn.iter_commits(since=str(year - 1), until=str(year))
+                )
+                for commit in commit_list:
+                    old_contributors.append(commit.author.name)
+
+            result_total[year] = len(set(contributors))
+            result_positive[year] = len(set(contributors) - set(old_contributors))
+            result_negative[year] = len(set(old_contributors) - set(contributors))
+
+        return result_total, result_positive, result_negative
+
+    def calculate_avg_contributions_per_year(self):
+        year_begin = int(
+            self.conn.git.execute(
+                [
+                    "git",
+                    "log",
+                    "--reverse",
+                    "--pretty=format:%ad",
+                    "--date=format:%Y",
+                ]
+            ).split("\n")[0]
+        )
+        year_end = int(
+            self.conn.git.execute(
+                [
+                    "git",
+                    "log",
+                    "--pretty=format:%ad",
+                    "--date=format:%Y",
+                ]
+            ).split("\n")[0]
+        )
+
+        result = {}
+        for year in range(year_begin, year_end + 1):
+            commit_list = list(
+                self.conn.iter_commits(since=str(year), until=str(year + 1))
+            )
+
+            amount_of_commits = {}
+            for commit in commit_list:
+                if commit.author.name in amount_of_commits.keys():
+                    amount_of_commits[commit.author.name] += 1
+                else:
+                    amount_of_commits[commit.author.name] = 1
+
+            min_value, max_value = 999999, 0
+            for contributor in amount_of_commits.keys():
+                if amount_of_commits[contributor] < min_value:
+                    min_value = amount_of_commits[contributor]
+                if amount_of_commits[contributor] > max_value:
+                    max_value = amount_of_commits[contributor]
+            avg_value = (
+                (sum(list(amount_of_commits.values())) / len(amount_of_commits))
+                if len(amount_of_commits) > 0
+                else 0
+            )
+
+            result[year] = (min_value, max_value, avg_value)
+
+        return result
+
+    def calculate_avg_lines_changed(self):
+        year_begin = int(
+            self.conn.git.execute(
+                [
+                    "git",
+                    "log",
+                    "--reverse",
+                    "--pretty=format:%ad",
+                    "--date=format:%Y",
+                ]
+            ).split("\n")[0]
+        )
+        year_end = int(
+            self.conn.git.execute(
+                [
+                    "git",
+                    "log",
+                    "--pretty=format:%ad",
+                    "--date=format:%Y",
+                ]
+            ).split("\n")[0]
+        )
+
+        result_insertions = {}
+        result_deletions = {}
+        for year in range(year_begin, year_end + 1):
+            commit_list = list(
+                self.conn.iter_commits(since=str(year), until=str(year + 1))
+            )
+
+            insertions = []
+            deletions = []
+            for commit in commit_list:
+                insertions.append(commit.stats.total["insertions"])
+                deletions.append(commit.stats.total["deletions"])
+
+            min_insertions_value, max_insertions_value = 999999, 0
+            min_deletions_value, max_deletions_value = 999999, 0
+            for i in range(len(commit_list)):
+                if insertions[i] < min_insertions_value:
+                    min_insertions_value = insertions[i]
+                if insertions[i] > max_insertions_value:
+                    max_insertions_value = insertions[i]
+                if deletions[i] < min_deletions_value:
+                    min_deletions_value = deletions[i]
+                if deletions[i] > max_deletions_value:
+                    max_deletions_value = deletions[i]
+            avg_insertions_value = sum(insertions) / len(insertions)
+            avg_deletions_value = sum(deletions) / len(deletions)
+
+            result_insertions[year] = (
+                min_insertions_value,
+                max_insertions_value,
+                avg_insertions_value,
+            )
+            result_deletions[year] = (
+                min_deletions_value,
+                max_deletions_value,
+                avg_deletions_value,
+            )
+
+        return result_insertions, result_deletions
