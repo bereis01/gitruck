@@ -327,11 +327,14 @@ class Gitruck:
                     min_value = amount_of_commits[contributor]
                 if amount_of_commits[contributor] > max_value:
                     max_value = amount_of_commits[contributor]
+            min_value = math.log10(min_value) if min_value != 0 else 0
+            max_value = math.log10(max_value) if max_value != 0 else 0
             avg_value = (
                 (sum(list(amount_of_commits.values())) / len(amount_of_commits))
                 if len(amount_of_commits) > 0
                 else 0
             )
+            avg_value = math.log10(avg_value) if max_value != 0 else 0
 
             result[year] = (min_value, max_value, avg_value)
 
@@ -384,8 +387,30 @@ class Gitruck:
                     min_deletions_value = deletions[i]
                 if deletions[i] > max_deletions_value:
                     max_deletions_value = deletions[i]
-            avg_insertions_value = sum(insertions) / len(insertions)
-            avg_deletions_value = sum(deletions) / len(deletions)
+            min_insertions_value = (
+                math.log10(min_insertions_value) if min_insertions_value != 0 else 0
+            )
+            max_insertions_value = (
+                math.log10(max_insertions_value) if max_insertions_value != 0 else 0
+            )
+            avg_insertions_value = (
+                (sum(insertions) / len(insertions)) if len(insertions) > 0 else 0
+            )
+            avg_insertions_value = (
+                math.log10(avg_insertions_value) if avg_insertions_value != 0 else 0
+            )
+            min_deletions_value = (
+                math.log10(min_deletions_value) if min_deletions_value != 0 else 0
+            )
+            max_deletions_value = (
+                math.log10(max_deletions_value) if max_deletions_value != 0 else 0
+            )
+            avg_deletions_value = (
+                (sum(deletions) / len(deletions)) if len(deletions) > 0 else 0
+            )
+            avg_deletions_value = (
+                math.log10(avg_deletions_value) if avg_deletions_value != 0 else 0
+            )
 
             result_insertions[year] = (
                 min_insertions_value,

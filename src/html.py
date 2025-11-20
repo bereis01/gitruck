@@ -119,8 +119,169 @@ class Html:
             "</p>"
         )
 
-    def add_contribution_statistics(self):
-        pass
+    def add_contribution_statistics(self, contributions, insertions, deletions):
+        # Generates the visualization
+        img = BytesIO()
+        fig, ax = plt.subplots(1, 3)
+        fig.set_size_inches(12, 3.5)
+
+        ax[0].plot(
+            contributions.keys(),
+            [x[2] for x in contributions.values()],
+            color="#F4C524",
+            label="Average",
+        )
+        ax[0].scatter(
+            contributions.keys(),
+            [x[2] for x in contributions.values()],
+            color="#F4C524",
+        )
+        ax[0].plot(
+            contributions.keys(),
+            [x[0] for x in contributions.values()],
+            color="#F4C524",
+            label="Minimum",
+            alpha=0.5,
+            linestyle="-",
+        )
+        ax[0].fill_between(
+            contributions.keys(),
+            [x[2] for x in contributions.values()],
+            [x[0] for x in contributions.values()],
+            color="#F4C524",
+            alpha=0.25,
+        )
+        ax[0].plot(
+            contributions.keys(),
+            [x[1] for x in contributions.values()],
+            color="#F4C524",
+            label="Maximum",
+            alpha=0.5,
+            linestyle="dashdot",
+        )
+        ax[0].fill_between(
+            contributions.keys(),
+            [x[2] for x in contributions.values()],
+            [x[1] for x in contributions.values()],
+            color="#F4C524",
+            alpha=0.25,
+        )
+        ax[0].set_title("Contributions per Contributor")
+        ax[0].set_xlabel("Year")
+        ax[0].set_ylabel("N° of Contributions (log10)")
+        ax[0].grid(alpha=0.25)
+        ax[0].legend()
+
+        ax[1].plot(
+            insertions.keys(),
+            [x[2] for x in insertions.values()],
+            color="#41E04E",
+            label="Average",
+        )
+        ax[1].scatter(
+            insertions.keys(),
+            [x[2] for x in insertions.values()],
+            color="#41E04E",
+        )
+        ax[1].plot(
+            insertions.keys(),
+            [x[0] for x in insertions.values()],
+            color="#41E04E",
+            label="Minimum",
+            alpha=0.5,
+            linestyle="-",
+        )
+        ax[1].fill_between(
+            insertions.keys(),
+            [x[2] for x in insertions.values()],
+            [x[0] for x in insertions.values()],
+            color="#41E04E",
+            alpha=0.25,
+        )
+        ax[1].plot(
+            insertions.keys(),
+            [x[1] for x in insertions.values()],
+            color="#41E04E",
+            label="Maximum",
+            alpha=0.5,
+            linestyle="dashdot",
+        )
+        ax[1].fill_between(
+            insertions.keys(),
+            [x[2] for x in insertions.values()],
+            [x[1] for x in insertions.values()],
+            color="#41E04E",
+            alpha=0.25,
+        )
+        ax[1].set_title("Insertions per Contribution")
+        ax[1].set_xlabel("Year")
+        ax[1].set_ylabel("N° of Lines Added (log10)")
+        ax[1].grid(alpha=0.25)
+        ax[1].legend()
+
+        ax[2].plot(
+            deletions.keys(),
+            [x[2] for x in deletions.values()],
+            color="#E04141",
+            label="Average",
+        )
+        ax[2].scatter(
+            deletions.keys(),
+            [x[2] for x in deletions.values()],
+            color="#E04141",
+        )
+        ax[2].plot(
+            deletions.keys(),
+            [x[0] for x in deletions.values()],
+            color="#E04141",
+            label="Minimum",
+            alpha=0.5,
+            linestyle="-",
+        )
+        ax[2].fill_between(
+            deletions.keys(),
+            [x[2] for x in deletions.values()],
+            [x[0] for x in deletions.values()],
+            color="#E04141",
+            alpha=0.25,
+        )
+        ax[2].plot(
+            deletions.keys(),
+            [x[1] for x in deletions.values()],
+            color="#E04141",
+            label="Maximum",
+            alpha=0.5,
+            linestyle="dashdot",
+        )
+        ax[2].fill_between(
+            deletions.keys(),
+            [x[2] for x in deletions.values()],
+            [x[1] for x in deletions.values()],
+            color="#E04141",
+            alpha=0.25,
+        )
+        ax[2].set_title("Deletions per Contribution")
+        ax[2].set_xlabel("Year")
+        ax[2].set_ylabel("N° of Lines Removed (log10)")
+        ax[2].grid(alpha=0.25)
+        ax[2].legend()
+
+        fig.tight_layout()  # Makes things less tight lol
+        fig.savefig(img, format="png", dpi=300)
+        plt.close()
+
+        # Appends it to the buffer
+        image_ID = len(self.images)
+        self.images.append(img)
+
+        # Includes it in the body of the doc
+        width, height = fig.get_size_inches() * fig.dpi
+        self.body += (
+            '<p style="margin-top:50px;" align="center">'
+            '<a style="font-size:25px;">Here are some statistics about the characteristics of contributions:</a></br>'
+            f'<img style="margin-top:20px;" src="./{self._images_path}{image_ID}.png" width="{width}" height="{height}">'
+            "</p>"
+        )
 
     def persist(self):
         # Arranges the repository
