@@ -68,7 +68,7 @@ $ pip install -r requirements.txt
 3. A ferramenta pode ser executada por meio do comando:
 
 ```sh
-$ python3 -m gitruck <repo-url>
+$ python3 -m gitruck <repo_url>
 ```
 
 ## Exemplo de Utilização
@@ -109,9 +109,15 @@ Printing contribution statistics...DONE
 Writing results to './report/'...DONE
 ```
 
+Mais informações sobre as *flags* aceitas pela ferramenta podem ser obtidas por meio do comando:
+
+```sh
+$ gitruck --help
+```
+
 ## Execução dos Testes
 
-1. Clone este repositório por meio do comando e se posicione na raiz do projeto:
+1. Clone este repositório por meio do seguinte comando e se posicione na raiz do projeto:
 
 ```sh
 $ git clone https://github.com/bereis01/gitruck
