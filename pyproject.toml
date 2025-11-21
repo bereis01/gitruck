@@ -11,7 +11,7 @@ gitruck = "gitruck.__main__:main"
 
 [project]
 name = "gitruck"
-version = "0.0.1"
+version = "1.0.0"
 authors = [
   { name="Bernardo Reis", email="bernardo.reis.almeida01@gmail.com" },
 ]
