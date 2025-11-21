@@ -10,7 +10,7 @@
     <br />
     <a href="https://github.com/bereis01/gitruck/issues">Report Bug</a>
     ·
-    <a href="#Contato">Send Feedback</a>
+    <a href="#%EF%B8%8F-contato">Send Feedback</a>
   </p>
 </p>
 <div align="center">
