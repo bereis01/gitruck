@@ -32,6 +32,16 @@ A ferramenta foi inteiramente implementada na linguagem de programação Python,
 <!-- USAGE -->
 # ⚙️ Utilização
 
+Todas as instruções a seguir foram validadas apenas no sistema operacional Linux. Elas podem não funcionar para sistemas Windows ou MacOS.
+
+## Requisitos
+
+Os seguintes programas devem estar instalados para o correto funcionamento da ferramenta:
+
+- <a href="https://www.python.org/downloads/">Python</a>
+- <a href="https://github.com/github-linguist/linguist?tab=readme-ov-file#installation">Linguist</a>
+- <a href="https://git-scm.com/install/">Git</a>
+
 ## Instalação via pip (Recomendado)
 
 1. Faça o download do arquivo ***gitruck-X.Y.X.tar.gz*** da *release* mais recente deste repositório.
