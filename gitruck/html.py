@@ -103,7 +103,10 @@ class Html:
 
         ax[0].plot(total.keys(), total.values(), color="#F4C524")
         ax[0].scatter(total.keys(), total.values(), color="#F4C524")
-        ax[0].set_ylim(0, max(total.values()))  # Normalizes scale according to total
+        if max(total.values()) != 0:
+            ax[0].set_ylim(
+                0, max(total.values())
+            )  # Normalizes scale according to total
         ax[0].set_title("Total Amount of Contributors")
         ax[0].set_xlabel("Year")
         ax[0].set_ylabel("N° of Contributors")
@@ -111,7 +114,10 @@ class Html:
 
         ax[1].plot(positive.keys(), positive.values(), color="#41E04E")
         ax[1].scatter(positive.keys(), positive.values(), color="#41E04E")
-        ax[1].set_ylim(0, max(total.values()))  # Normalizes scale according to total
+        if max(total.values()) != 0:
+            ax[1].set_ylim(
+                0, max(total.values())
+            )  # Normalizes scale according to total
         ax[1].set_title("Net Amount of New Contributors")
         ax[1].set_xlabel("Year")
         ax[1].set_ylabel("N° of Contributors")
@@ -119,7 +125,10 @@ class Html:
 
         ax[2].plot(negative.keys(), negative.values(), color="#E04141")
         ax[2].scatter(negative.keys(), negative.values(), color="#E04141")
-        ax[2].set_ylim(0, max(total.values()))  # Normalizes scale according to total
+        if max(total.values()) != 0:
+            ax[2].set_ylim(
+                0, max(total.values())
+            )  # Normalizes scale according to total
         ax[2].set_title("Net Amount of Lost Contributors")
         ax[2].set_xlabel("Year")
         ax[2].set_ylabel("N° of Contributors")
