@@ -151,3 +151,42 @@ def test_normalized_DOA_single_dev_do_not_normalize():
     normalized_DOA = gitruck._calculate_normalized_DOA(DOA, files, contributors)
 
     assert normalized_DOA["Bernardo"]["test.py"] == 3.78
+
+
+def test_get_log10_min_max_avg_values_for_empty_list():
+    vector = []
+    gitruck = Gitruck()
+
+    result = gitruck._get_log10_min_max_avg(vector)
+
+    assert result == (0, 0, 0)
+
+
+def test_get_log10_min_max_avg_values_for_single_element():
+    vector = [10]
+    gitruck = Gitruck()
+
+    result = gitruck._get_log10_min_max_avg(vector)
+
+    assert result == (1, 1, 1)
+
+
+def test_get_log10_min_max_avg_values_for_multiple_elements():
+    vector = [10, 100, 1000]
+    gitruck = Gitruck()
+
+    result = gitruck._get_log10_min_max_avg(vector)
+
+    assert result[0] == 1
+    assert result[1] == 3
+    assert result[2] < 3
+    assert result[2] > 2
+
+
+def test_get_log10_min_max_avg_values_for_zeros_vector():
+    vector = [0, 0, 0]
+    gitruck = Gitruck()
+
+    result = gitruck._get_log10_min_max_avg(vector)
+
+    assert result == (0, 0, 0)

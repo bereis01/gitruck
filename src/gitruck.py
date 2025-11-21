@@ -274,33 +274,7 @@ class Gitruck:
         if self._verbose:
             print("Calculating contributors per year...", end="", flush=True)
 
-        if since:
-            year_begin = since
-        else:
-            year_begin = int(
-                self.conn.git.execute(
-                    [
-                        "git",
-                        "log",
-                        "--reverse",
-                        "--pretty=format:%ad",
-                        "--date=format:%Y",
-                    ]
-                ).split("\n")[0]
-            )
-        if until:
-            year_end = until
-        else:
-            year_end = int(
-                self.conn.git.execute(
-                    [
-                        "git",
-                        "log",
-                        "--pretty=format:%ad",
-                        "--date=format:%Y",
-                    ]
-                ).split("\n")[0]
-            )
+        year_begin, year_end = self._parse_date(since, until)
 
         result_total = {}
         result_positive = {}
@@ -323,6 +297,7 @@ class Gitruck:
                 for commit in commit_list:
                     old_contributors.append(commit.author.name)
 
+            # Uses both to generate total amount and net changes
             result_total[year] = len(set(contributors))
             result_positive[year] = len(set(contributors) - set(old_contributors))
             result_negative[year] = len(set(old_contributors) - set(contributors))
@@ -338,61 +313,28 @@ class Gitruck:
         if self._verbose:
             print("Calculating contributions per year...", end="", flush=True)
 
-        if since:
-            year_begin = since
-        else:
-            year_begin = int(
-                self.conn.git.execute(
-                    [
-                        "git",
-                        "log",
-                        "--reverse",
-                        "--pretty=format:%ad",
-                        "--date=format:%Y",
-                    ]
-                ).split("\n")[0]
-            )
-        if until:
-            year_end = until
-        else:
-            year_end = int(
-                self.conn.git.execute(
-                    [
-                        "git",
-                        "log",
-                        "--pretty=format:%ad",
-                        "--date=format:%Y",
-                    ]
-                ).split("\n")[0]
-            )
+        year_begin, year_end = self._parse_date(since, until)
 
         result = {}
         for year in range(year_begin, year_end + 1):
+            # Gets the commit list for the year
             commit_list = list(
                 self.conn.iter_commits(since=str(year), until=str(year + 1))
             )
 
+            # Gets the amount of commits per author
             amount_of_commits = {}
             for commit in commit_list:
                 if commit.author.name in amount_of_commits.keys():
                     amount_of_commits[commit.author.name] += 1
                 else:
                     amount_of_commits[commit.author.name] = 1
+            amount_of_commits = list(amount_of_commits.values())
 
-            min_value, max_value = 999999, 0
-            for contributor in amount_of_commits.keys():
-                if amount_of_commits[contributor] < min_value:
-                    min_value = amount_of_commits[contributor]
-                if amount_of_commits[contributor] > max_value:
-                    max_value = amount_of_commits[contributor]
-            min_value = math.log10(min_value) if min_value != 0 else 0
-            max_value = math.log10(max_value) if max_value != 0 else 0
-            avg_value = (
-                (sum(list(amount_of_commits.values())) / len(amount_of_commits))
-                if len(amount_of_commits) > 0
-                else 0
+            # Gets minimum, maximum and average per year
+            min_value, max_value, avg_value = self._get_log10_min_max_avg(
+                amount_of_commits
             )
-            avg_value = math.log10(avg_value) if max_value != 0 else 0
 
             result[year] = (min_value, max_value, avg_value)
 
@@ -407,6 +349,35 @@ class Gitruck:
         if self._verbose:
             print("Calculating code insertions and deletions...", end="", flush=True)
 
+        year_begin, year_end = self._parse_date(since, until)
+
+        result_insertions = {}
+        result_deletions = {}
+        for year in range(year_begin, year_end + 1):
+            commit_list = list(
+                self.conn.iter_commits(since=str(year), until=str(year + 1))
+            )
+
+            insertions = []
+            deletions = []
+            for commit in commit_list:
+                insertions.append(commit.stats.total["insertions"])
+                deletions.append(commit.stats.total["deletions"])
+
+            min_value, max_value, avg_value = self._get_log10_min_max_avg(insertions)
+            result_insertions[year] = (min_value, max_value, avg_value)
+
+            min_value, max_value, avg_value = self._get_log10_min_max_avg(deletions)
+            result_deletions[year] = (min_value, max_value, avg_value)
+
+        if self._verbose:
+            print("DONE\n", end="", flush=True)
+
+        return result_insertions, result_deletions
+
+    def _parse_date(self, since: int | None, until: int | None):
+        year_begin, year_end = None, None
+
         if since:
             year_begin = since
         else:
@@ -435,67 +406,20 @@ class Gitruck:
                 ).split("\n")[0]
             )
 
-        result_insertions = {}
-        result_deletions = {}
-        for year in range(year_begin, year_end + 1):
-            commit_list = list(
-                self.conn.iter_commits(since=str(year), until=str(year + 1))
-            )
+        return year_begin, year_end
 
-            insertions = []
-            deletions = []
-            for commit in commit_list:
-                insertions.append(commit.stats.total["insertions"])
-                deletions.append(commit.stats.total["deletions"])
+    def _get_log10_min_max_avg(self, vector):
+        if not vector:
+            return (0, 0, 0)
 
-            min_insertions_value, max_insertions_value = 999999, 0
-            min_deletions_value, max_deletions_value = 999999, 0
-            for i in range(len(commit_list)):
-                if insertions[i] < min_insertions_value:
-                    min_insertions_value = insertions[i]
-                if insertions[i] > max_insertions_value:
-                    max_insertions_value = insertions[i]
-                if deletions[i] < min_deletions_value:
-                    min_deletions_value = deletions[i]
-                if deletions[i] > max_deletions_value:
-                    max_deletions_value = deletions[i]
-            min_insertions_value = (
-                math.log10(min_insertions_value) if min_insertions_value != 0 else 0
-            )
-            max_insertions_value = (
-                math.log10(max_insertions_value) if max_insertions_value != 0 else 0
-            )
-            avg_insertions_value = (
-                (sum(insertions) / len(insertions)) if len(insertions) > 0 else 0
-            )
-            avg_insertions_value = (
-                math.log10(avg_insertions_value) if avg_insertions_value != 0 else 0
-            )
-            min_deletions_value = (
-                math.log10(min_deletions_value) if min_deletions_value != 0 else 0
-            )
-            max_deletions_value = (
-                math.log10(max_deletions_value) if max_deletions_value != 0 else 0
-            )
-            avg_deletions_value = (
-                (sum(deletions) / len(deletions)) if len(deletions) > 0 else 0
-            )
-            avg_deletions_value = (
-                math.log10(avg_deletions_value) if avg_deletions_value != 0 else 0
-            )
-
-            result_insertions[year] = (
-                min_insertions_value,
-                max_insertions_value,
-                avg_insertions_value,
-            )
-            result_deletions[year] = (
-                min_deletions_value,
-                max_deletions_value,
-                avg_deletions_value,
-            )
-
-        if self._verbose:
-            print("DONE\n", end="", flush=True)
-
-        return result_insertions, result_deletions
+        min_value, max_value = 999999, 0
+        for element in vector:
+            if element < min_value:
+                min_value = element
+            if element > max_value:
+                max_value = element
+        min_value = math.log10(min_value) if min_value != 0 else 0
+        max_value = math.log10(max_value) if max_value != 0 else 0
+        avg_value = (sum(vector) / len(vector)) if len(vector) > 0 else 0
+        avg_value = math.log10(avg_value) if max_value != 0 else 0
+        return (min_value, max_value, avg_value)
