@@ -29,14 +29,36 @@ class Html:
         if self._verbose:
             print("Printing logo...", end="", flush=True)
 
+        logo = self._get_logo_from_disk()
+
+        # Generates the visualization
+        img = BytesIO()
+        fig = plt.figure(figsize=(2.5, 2.5))
+        ax = plt.Axes(fig, [0.0, 0.0, 1.0, 1.0])
+        ax.set_axis_off()
+        fig.add_axes(ax)
+        ax.imshow(logo)
+        fig.savefig(img, format="png", dpi=300)
+        plt.close()
+
+        # Appends it to the buffer
+        image_ID = len(self.images)
+        self.images.append(img)
+
+        # Includes it in the body of the doc
+        width, height = fig.get_size_inches() * fig.dpi
         self.body += (
             '<p style="margin-bottom:0px;" align="center">\n'
-            '<img src="../assets/gitruck_logo.png" width="250" height="250">\n'
+            f'<img src="./{self._images_path}{image_ID}.png" width="{width}" height="{height}" alt="gitruck_logo">\n'
             "</p>"
         )
 
         if self._verbose:
             print("DONE\n", end="", flush=True)
+
+    def _get_logo_from_disk(self):
+        with open("./assets/gitruck_logo.png", "rb") as image_file:
+            return plt.imread(image_file, format="png")
 
     def add_truck_factor(self, truck_factor: int):
         if self._verbose:

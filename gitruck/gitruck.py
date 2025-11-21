@@ -14,6 +14,11 @@ class Gitruck:
         self._verbose = verbose
         self._local_repository_path = "./tmp"
 
+    def __del__(self):
+        # Removes any repository created
+        if os.path.exists(self._local_repository_path):
+            shutil.rmtree(self._local_repository_path)
+
     def _load_aux(self):
         self.conn = Repo("./tmp")
 
