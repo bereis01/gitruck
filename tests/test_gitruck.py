@@ -1,4 +1,4 @@
-from src.gitruck import Gitruck
+from gitruck.gitruck import Gitruck
 
 
 def test_parse_linguist_output_multiple_files():

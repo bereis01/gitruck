@@ -1,4 +1,4 @@
-from src.html import Html
+from gitruck.html import Html
 
 
 def test_style_config_and_empty_body_on_init():

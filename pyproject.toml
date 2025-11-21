@@ -1,0 +1,30 @@
+[build-system]
+requires = ["setuptools >= 77.0.3", "requests==2.32.5", "matplotlib==3.10.7", "pytest==9.0.0", "python-Levenshtein==0.27.3", "GitPython==3.1.45"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["gitruck", "assets"]
+
+[project.scripts]
+gitruck = "gitruck.__main__:main"
+
+[project]
+name = "gitruck"
+version = "0.0.1"
+authors = [
+  { name="Bernardo Reis", email="bernardo.reis.almeida01@gmail.com" },
+]
+description = "Collaboration analysis tool for git repositories."
+readme = "README.md"
+requires-python = ">=3.9"
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "Operating System :: OS Independent",
+]
+license = "MIT"
+license-files = ["LICEN[CS]E*"]
+
+[project.urls]
+Homepage = "https://github.com/bereis01/gitruck"
+Issues = "https://github.com/bereis01/gitruck/issues"

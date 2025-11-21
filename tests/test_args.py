@@ -1,4 +1,4 @@
-from src.args import ArgParse
+from gitruck.args import ArgParse
 
 
 def test_cli_arguments_initialization():
