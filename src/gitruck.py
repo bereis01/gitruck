@@ -10,24 +10,48 @@ from io import BytesIO
 
 
 class Gitruck:
-    def __init__(self):
+    def __init__(self, verbose: bool = False):
+        self._verbose = verbose
         self._local_repository_path = "./tmp"
 
     def _load_aux(self):
         self.conn = Repo("./tmp")
 
     def load_repository_locally(self, github_url: str):
+        if self._verbose:
+            print("Cloning repository locally...", end="", flush=True)
+
         if os.path.exists(self._local_repository_path):
             shutil.rmtree(self._local_repository_path)
         self.conn = Repo.clone_from(github_url, self._local_repository_path)
 
+        if self._verbose:
+            print("DONE\n", end="", flush=True)
+
     def calculate_truck_factor(
         self, since: int | None = None, until: int | None = None
     ):
+        if self._verbose:
+            print("Getting code file paths...", end="", flush=True)
         files = self._get_code_file_paths()
+        if self._verbose:
+            print("DONE\n", end="", flush=True)
+
+        if self._verbose:
+            print("Getting contributor names...", end="", flush=True)
         dev_name = self._generate_dev_names(self._get_git_contributors())
         contributors = list(set(dev_name.values()))
+        if self._verbose:
+            print("DONE\n", end="", flush=True)
+
+        if self._verbose:
+            print("Getting commits on each file...", end="", flush=True)
         commits_per_file = self._get_commits_per_file(files, since, until)
+        if self._verbose:
+            print("DONE\n", end="", flush=True)
+
+        if self._verbose:
+            print("Calculating truck factor...", end="", flush=True)
 
         DOA = self._calculate_DOA(files, contributors, commits_per_file, dev_name)
         normalized_DOA = self._calculate_normalized_DOA(DOA, files, contributors)
@@ -77,6 +101,9 @@ class Gitruck:
             for contributor in authored_files.keys():
                 _files += authored_files[contributor]
             _files = list(set(_files))
+
+        if self._verbose:
+            print("DONE\n", end="", flush=True)
 
         return truck_factor, top_contributors
 
@@ -244,6 +271,9 @@ class Gitruck:
     def calculate_contributors_per_year(
         self, since: int | None = None, until: int | None = None
     ):
+        if self._verbose:
+            print("Calculating contributors per year...", end="", flush=True)
+
         if since:
             year_begin = since
         else:
@@ -297,11 +327,17 @@ class Gitruck:
             result_positive[year] = len(set(contributors) - set(old_contributors))
             result_negative[year] = len(set(old_contributors) - set(contributors))
 
+        if self._verbose:
+            print("DONE\n", end="", flush=True)
+
         return result_total, result_positive, result_negative
 
     def calculate_avg_contributions_per_year(
         self, since: int | None = None, until: int | None = None
     ):
+        if self._verbose:
+            print("Calculating contributions per year...", end="", flush=True)
+
         if since:
             year_begin = since
         else:
@@ -360,11 +396,17 @@ class Gitruck:
 
             result[year] = (min_value, max_value, avg_value)
 
+        if self._verbose:
+            print("DONE\n", end="", flush=True)
+
         return result
 
     def calculate_avg_lines_changed(
         self, since: int | None = None, until: int | None = None
     ):
+        if self._verbose:
+            print("Calculating code insertions and deletions...", end="", flush=True)
+
         if since:
             year_begin = since
         else:
@@ -452,5 +494,8 @@ class Gitruck:
                 max_deletions_value,
                 avg_deletions_value,
             )
+
+        if self._verbose:
+            print("DONE\n", end="", flush=True)
 
         return result_insertions, result_deletions

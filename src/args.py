@@ -25,6 +25,10 @@ class ArgParse:
                 2008 + x for x in range(0, datetime.datetime.now().year - 2008 + 1)
             ],
         )
+        self.parser.add_argument("-v", "--verbose", action="store_true")
+
+    def get_all_arguments(self):
+        return self.parser.parse_args()
 
     def get_url(self):
         args = self.parser.parse_args()
@@ -33,3 +37,7 @@ class ArgParse:
     def get_time_period(self):
         args = self.parser.parse_args()
         return args.since, args.until
+
+    def get_verbose(self):
+        args = self.parser.parse_args()
+        return args.verbose

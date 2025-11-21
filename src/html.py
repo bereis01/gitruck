@@ -7,7 +7,7 @@ from matplotlib import pyplot as plt
 
 
 class Html:
-    def __init__(self):
+    def __init__(self, verbose: bool = False):
         self._persist_path = "./report/"
         self._images_path = "assets/"
 
@@ -23,14 +23,25 @@ class Html:
 
         self.images = []
 
+        self._verbose = verbose
+
     def add_logo(self):
+        if self._verbose:
+            print("Printing logo...", end="", flush=True)
+
         self.body += (
             '<p style="margin-bottom:0px;" align="center">\n'
             '<img src="../assets/gitruck_logo.png" width="250" height="250">\n'
             "</p>"
         )
 
+        if self._verbose:
+            print("DONE\n", end="", flush=True)
+
     def add_truck_factor(self, truck_factor: int):
+        if self._verbose:
+            print("Printing truck factor...", end="", flush=True)
+
         self.body += (
             '<p style="margin-top:0px;" align="center">'
             '<a style="font-size:40px">Your truck factor is... </a>'
@@ -39,7 +50,13 @@ class Html:
             "</p>"
         )
 
+        if self._verbose:
+            print("DONE\n", end="", flush=True)
+
     def add_top_contributors(self, top_contributors: dict):
+        if self._verbose:
+            print("Printing top contributors...", end="", flush=True)
+
         # Limits the size of the list
         if len(top_contributors) > 10:
             top_contributors = dict(itertools.islice(top_contributors.items(), 10))
@@ -72,7 +89,13 @@ class Html:
             "</p>"
         )
 
+        if self._verbose:
+            print("DONE\n", end="", flush=True)
+
     def add_contributor_statistics(self, total: dict, positive: dict, negative: dict):
+        if self._verbose:
+            print("Printing contributor statistics...", end="", flush=True)
+
         # Generates the visualization
         img = BytesIO()
         fig, ax = plt.subplots(1, 3)
@@ -119,7 +142,13 @@ class Html:
             "</p>"
         )
 
+        if self._verbose:
+            print("DONE\n", end="", flush=True)
+
     def add_contribution_statistics(self, contributions, insertions, deletions):
+        if self._verbose:
+            print("Printing contribution statistics...", end="", flush=True)
+
         # Generates the visualization
         img = BytesIO()
         fig, ax = plt.subplots(1, 3)
@@ -283,7 +312,13 @@ class Html:
             "</p>"
         )
 
+        if self._verbose:
+            print("DONE\n", end="", flush=True)
+
     def persist(self):
+        if self._verbose:
+            print("Writing results to disk...", end="", flush=True)
+
         # Arranges the repository
         if not os.path.exists(self._persist_path):
             os.makedirs(self._persist_path)
@@ -310,3 +345,6 @@ class Html:
         doc_file = open(f"{self._persist_path}/index.html", "w")
         doc_file.write(doc_str)
         doc_file.close()
+
+        if self._verbose:
+            print("DONE\n", end="", flush=True)
