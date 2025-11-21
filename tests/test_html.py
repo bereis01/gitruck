@@ -1,4 +1,4 @@
-import numpy as np
+from io import BytesIO
 from gitruck.html import Html
 from unittest.mock import Mock
 
@@ -19,7 +19,7 @@ def test_style_config_and_empty_body_on_init():
 
 def test_add_logo():
     html = Html()
-    html._get_logo_from_disk = Mock(return_value=np.array([[0, 0, 0], [0, 0, 0]]))
+    html._get_logo = Mock(return_value=BytesIO())
 
     html.add_logo()
 
