@@ -32,7 +32,105 @@ A ferramenta foi inteiramente implementada na linguagem de programação Python,
 <!-- USAGE -->
 # ⚙️ Utilização
 
+## Instalação via pip (Recomendado)
 
+1. Faça o download do arquivo ***gitruck-X.Y.X.tar.gz*** da *release* mais recente deste repositório.
+
+2. Em uma janela de terminal posicionada no local em que o download foi feito, execute:
+
+```sh
+$ pip install gitruck-X.Y.Z.tar.gz
+```
+
+3. A ferramenta pode ser executada por meio do comando:
+
+```sh
+$ gitruck <repo_url>
+```
+
+## Instalação Manual
+
+1. Clone este repositório por meio do comando e se posicione na raiz do projeto:
+
+```sh
+$ git clone https://github.com/bereis01/gitruck
+$ cd gitruck
+```
+
+2. Crie um ambiente virtual Python e instale os pré-requisitos:
+
+```sh
+$ python3 -m venv ./.venv
+$ source ./.venv/bin/activate
+$ pip install -r requirements.txt
+```
+
+3. A ferramenta pode ser executada por meio do comando:
+
+```sh
+$ python3 -m gitruck <repo-url>
+```
+
+## Exemplo de Utilização
+
+Para a geração de um relatório referente a este repositório, execute:
+
+```sh
+$ gitruck https://github.com/bereis01/gitruck
+```
+
+O relatório será gerado em formato *.html* em um diretório *report/*, criado no mesmo local em que o comando foi executado. Para o visualizar, abra o arquivo *report/index.html* em um navegador.
+
+Para gerar um relatório que considera apenas um período de tempo específico, execute:
+
+```sh
+$ gitruck --since 2015 --until 2025 https://github.com/bereis01/gitruck
+```
+
+O cálculo do *truck factor* e de demais métricas será feito com informações apenas deste período de tempo.
+
+Por fim, para habilitar o modo verboso, o qual imprime informações variadas sobre a execução do programa no terminal, execute:
+
+```sh
+$ gitruck --verbose https://github.com/bereis01/gitruck
+Cloning repository locally...DONE
+Getting code file paths...DONE
+Getting contributor names...DONE
+Getting commits on each file...DONE
+Calculating truck factor...DONE
+Calculating contributors per year...DONE
+Calculating contributions per year...DONE
+Calculating code insertions and deletions...DONE
+Printing logo...DONE
+Printing truck factor...DONE
+Printing top contributors...DONE
+Printing contributor statistics...DONE
+Printing contribution statistics...DONE
+Writing results to './report/'...DONE
+```
+
+## Execução dos Testes
+
+1. Clone este repositório por meio do comando e se posicione na raiz do projeto:
+
+```sh
+$ git clone https://github.com/bereis01/gitruck
+$ cd gitruck
+```
+
+2. Crie um ambiente virtual Python e instale os pré-requisitos:
+
+```sh
+$ python3 -m venv ./.venv
+$ source ./.venv/bin/activate
+$ pip install -r requirements.txt
+```
+
+3. Os testes podem ser executados por meio do comando:
+
+```sh
+$ pytest tests/
+```
 
 <!-- CONTACT -->
 # ☎️ Contato

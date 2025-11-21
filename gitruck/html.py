@@ -326,7 +326,7 @@ class Html:
 
     def persist(self):
         if self._verbose:
-            print("Writing results to disk...", end="", flush=True)
+            print(f"Writing results to '{self._persist_path}'...", end="", flush=True)
 
         # Arranges the repository
         if not os.path.exists(self._persist_path):
