@@ -21,11 +21,13 @@ class Gitruck:
             shutil.rmtree(self._local_repository_path)
         self.conn = Repo.clone_from(github_url, self._local_repository_path)
 
-    def calculate_truck_factor(self):
+    def calculate_truck_factor(
+        self, since: int | None = None, until: int | None = None
+    ):
         files = self._get_code_file_paths()
         dev_name = self._generate_dev_names(self._get_git_contributors())
         contributors = list(set(dev_name.values()))
-        commits_per_file = self._get_commits_per_file(files)
+        commits_per_file = self._get_commits_per_file(files, since, until)
 
         DOA = self._calculate_DOA(files, contributors, commits_per_file, dev_name)
         normalized_DOA = self._calculate_normalized_DOA(DOA, files, contributors)
@@ -162,10 +164,14 @@ class Gitruck:
 
         return dev_name
 
-    def _get_commits_per_file(self, files: list):
+    def _get_commits_per_file(
+        self, files: list, since: int | None = None, until: int | None = None
+    ):
         commits_per_file = {}
         for file in files:
-            commits_for_file_generator = self.conn.iter_commits(paths=file)
+            commits_for_file_generator = self.conn.iter_commits(
+                since=since, until=until, paths=file
+            )
             commits_per_file[file] = list(commits_for_file_generator)
 
         return commits_per_file
@@ -235,28 +241,36 @@ class Gitruck:
 
         return normalized_DOA
 
-    def calculate_contributors_per_year(self):
-        year_begin = int(
-            self.conn.git.execute(
-                [
-                    "git",
-                    "log",
-                    "--reverse",
-                    "--pretty=format:%ad",
-                    "--date=format:%Y",
-                ]
-            ).split("\n")[0]
-        )
-        year_end = int(
-            self.conn.git.execute(
-                [
-                    "git",
-                    "log",
-                    "--pretty=format:%ad",
-                    "--date=format:%Y",
-                ]
-            ).split("\n")[0]
-        )
+    def calculate_contributors_per_year(
+        self, since: int | None = None, until: int | None = None
+    ):
+        if since:
+            year_begin = since
+        else:
+            year_begin = int(
+                self.conn.git.execute(
+                    [
+                        "git",
+                        "log",
+                        "--reverse",
+                        "--pretty=format:%ad",
+                        "--date=format:%Y",
+                    ]
+                ).split("\n")[0]
+            )
+        if until:
+            year_end = until
+        else:
+            year_end = int(
+                self.conn.git.execute(
+                    [
+                        "git",
+                        "log",
+                        "--pretty=format:%ad",
+                        "--date=format:%Y",
+                    ]
+                ).split("\n")[0]
+            )
 
         result_total = {}
         result_positive = {}
@@ -285,28 +299,36 @@ class Gitruck:
 
         return result_total, result_positive, result_negative
 
-    def calculate_avg_contributions_per_year(self):
-        year_begin = int(
-            self.conn.git.execute(
-                [
-                    "git",
-                    "log",
-                    "--reverse",
-                    "--pretty=format:%ad",
-                    "--date=format:%Y",
-                ]
-            ).split("\n")[0]
-        )
-        year_end = int(
-            self.conn.git.execute(
-                [
-                    "git",
-                    "log",
-                    "--pretty=format:%ad",
-                    "--date=format:%Y",
-                ]
-            ).split("\n")[0]
-        )
+    def calculate_avg_contributions_per_year(
+        self, since: int | None = None, until: int | None = None
+    ):
+        if since:
+            year_begin = since
+        else:
+            year_begin = int(
+                self.conn.git.execute(
+                    [
+                        "git",
+                        "log",
+                        "--reverse",
+                        "--pretty=format:%ad",
+                        "--date=format:%Y",
+                    ]
+                ).split("\n")[0]
+            )
+        if until:
+            year_end = until
+        else:
+            year_end = int(
+                self.conn.git.execute(
+                    [
+                        "git",
+                        "log",
+                        "--pretty=format:%ad",
+                        "--date=format:%Y",
+                    ]
+                ).split("\n")[0]
+            )
 
         result = {}
         for year in range(year_begin, year_end + 1):
@@ -340,28 +362,36 @@ class Gitruck:
 
         return result
 
-    def calculate_avg_lines_changed(self):
-        year_begin = int(
-            self.conn.git.execute(
-                [
-                    "git",
-                    "log",
-                    "--reverse",
-                    "--pretty=format:%ad",
-                    "--date=format:%Y",
-                ]
-            ).split("\n")[0]
-        )
-        year_end = int(
-            self.conn.git.execute(
-                [
-                    "git",
-                    "log",
-                    "--pretty=format:%ad",
-                    "--date=format:%Y",
-                ]
-            ).split("\n")[0]
-        )
+    def calculate_avg_lines_changed(
+        self, since: int | None = None, until: int | None = None
+    ):
+        if since:
+            year_begin = since
+        else:
+            year_begin = int(
+                self.conn.git.execute(
+                    [
+                        "git",
+                        "log",
+                        "--reverse",
+                        "--pretty=format:%ad",
+                        "--date=format:%Y",
+                    ]
+                ).split("\n")[0]
+            )
+        if until:
+            year_end = until
+        else:
+            year_end = int(
+                self.conn.git.execute(
+                    [
+                        "git",
+                        "log",
+                        "--pretty=format:%ad",
+                        "--date=format:%Y",
+                    ]
+                ).split("\n")[0]
+            )
 
         result_insertions = {}
         result_deletions = {}
