@@ -13,7 +13,7 @@ def main():
     # Executes all operations
     gitruck = Gitruck(verbose=verbose)
     gitruck.load_repository_locally(args.get_url())
-    truck_factor, top_contributors = gitruck.calculate_truck_factor()
+    truck_factor, top_contributors = gitruck.calculate_truck_factor(since, until)
     contributors_total, contributors_positive, contributors_negative = (
         gitruck.calculate_contributors_per_year(since, until)
     )

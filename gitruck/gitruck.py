@@ -199,6 +199,11 @@ class Gitruck:
     def _get_commits_per_file(
         self, files: list, since: int | None = None, until: int | None = None
     ):
+        if since:
+            since = str(since - 1)
+        if until:
+            until = str(until)
+
         commits_per_file = {}
         for file in files:
             commits_for_file_generator = self.conn.iter_commits(
@@ -223,11 +228,12 @@ class Gitruck:
             for file in files:
                 # Authorship
                 authorship = 0
-                first_author = commits_per_file[file][-1].author.name
-                if (first_author in dev_name.keys()) and (
-                    dev_name[first_author] == contributor
-                ):
-                    authorship = 1
+                if len(commits_per_file[file]) > 0:
+                    first_author = commits_per_file[file][-1].author.name
+                    if (first_author in dev_name.keys()) and (
+                        dev_name[first_author] == contributor
+                    ):
+                        authorship = 1
 
                 # Deliveries
                 deliveries = 0
