@@ -284,7 +284,7 @@ class Gitruck:
         result_total = {}
         result_positive = {}
         result_negative = {}
-        for year in range(year_begin, year_end + 1):
+        for year in range(year_begin - 1, year_end):
             # Gets the list of contributors this year
             commit_list = list(
                 self.conn.iter_commits(since=str(year), until=str(year + 1))
@@ -303,9 +303,9 @@ class Gitruck:
                     old_contributors.append(commit.author.name)
 
             # Uses both to generate total amount and net changes
-            result_total[year] = len(set(contributors))
-            result_positive[year] = len(set(contributors) - set(old_contributors))
-            result_negative[year] = len(set(old_contributors) - set(contributors))
+            result_total[year + 1] = len(set(contributors))
+            result_positive[year + 1] = len(set(contributors) - set(old_contributors))
+            result_negative[year + 1] = len(set(old_contributors) - set(contributors))
 
         if self._verbose:
             print("DONE\n", end="", flush=True)
@@ -321,7 +321,7 @@ class Gitruck:
         year_begin, year_end = self._parse_date(since, until)
 
         result = {}
-        for year in range(year_begin, year_end + 1):
+        for year in range(year_begin - 1, year_end):
             # Gets the commit list for the year
             commit_list = list(
                 self.conn.iter_commits(since=str(year), until=str(year + 1))
@@ -341,7 +341,7 @@ class Gitruck:
                 amount_of_commits
             )
 
-            result[year] = (min_value, max_value, avg_value)
+            result[year + 1] = (min_value, max_value, avg_value)
 
         if self._verbose:
             print("DONE\n", end="", flush=True)
@@ -358,7 +358,7 @@ class Gitruck:
 
         result_insertions = {}
         result_deletions = {}
-        for year in range(year_begin, year_end + 1):
+        for year in range(year_begin - 1, year_end):
             commit_list = list(
                 self.conn.iter_commits(since=str(year), until=str(year + 1))
             )
@@ -370,10 +370,10 @@ class Gitruck:
                 deletions.append(commit.stats.total["deletions"])
 
             min_value, max_value, avg_value = self._get_log10_min_max_avg(insertions)
-            result_insertions[year] = (min_value, max_value, avg_value)
+            result_insertions[year + 1] = (min_value, max_value, avg_value)
 
             min_value, max_value, avg_value = self._get_log10_min_max_avg(deletions)
-            result_deletions[year] = (min_value, max_value, avg_value)
+            result_deletions[year + 1] = (min_value, max_value, avg_value)
 
         if self._verbose:
             print("DONE\n", end="", flush=True)
